@@ -1,0 +1,24 @@
+tudorachedragos2k@gmail.com
+
+Tudorache Dragos-Cosmin
+
+Viper Programming Language
+
+Link
+
+-variabile.
+-atribuiri.
+-mai multe tipuri de date(intreg, natural, boolean, string, list, tuple, dict).
+-operatori peste tipurile natural, boolean.
+-instructiuni conditionale, repetitive(cu/fara contor).
+-comentarii.
+
+Netriviale:
+-operatori peste tipurile intreg, string, list, tuple, dict.
+-operatori intre tipuri de date diferite.
+-built-in functions pentru stringuri(len, search, slice,...) = string methods.
+-built-in functions pentru list, tuple, dict(count, append, insert, remove,....) = list methods.
+-lambda functions.
+-simulare I/O.
+-clase, metode, obiecte.
+-m am gandit si detectarea erorilor de indentare dar pare cam greu.(as avea o idee)
