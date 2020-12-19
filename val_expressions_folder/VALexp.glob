@@ -1,0 +1,75 @@
+DIGEST b00628a927c5fe325dae4c8e1a480962
+FVALexp
+R15:19 Coq.Arith.Arith <> <> lib
+R37:41 Coq.Strings.Ascii <> <> lib
+R59:74 Coq.Strings.Byte <> <> lib
+R92:97 Coq.Strings.String <> <> lib
+R246:254 datatypes <> <> lib
+R388:396 variables <> <> lib
+ind 456:469 <> val_expression
+constr 476:482 <> exp_val
+constr 510:516 <> exp_var
+constr 549:557 <> exp_array
+constr 587:595 <> exp_tuple
+constr 625:632 <> exp_plus
+constr 689:695 <> exp_sub
+constr 752:758 <> exp_mul
+constr 815:821 <> exp_div
+constr 878:884 <> exp_mod
+constr 1015:1024 <> exp_typeof
+R489:492 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R493:506 VALexp <> val_expression ind
+R486:488 datatypes <> Val ind
+R528:531 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R532:545 VALexp <> val_expression ind
+R520:527 variables <> variable ind
+R566:569 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R570:583 VALexp <> val_expression ind
+R561:565 datatypes <> Array ind
+R604:607 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R608:621 VALexp <> val_expression ind
+R599:603 datatypes <> Tuple ind
+R650:653 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R668:671 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R672:685 VALexp <> val_expression ind
+R654:667 VALexp <> val_expression ind
+R636:649 VALexp <> val_expression ind
+R713:716 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R731:734 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R735:748 VALexp <> val_expression ind
+R717:730 VALexp <> val_expression ind
+R699:712 VALexp <> val_expression ind
+R776:779 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R794:797 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R798:811 VALexp <> val_expression ind
+R780:793 VALexp <> val_expression ind
+R762:775 VALexp <> val_expression ind
+R839:842 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R857:860 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R861:874 VALexp <> val_expression ind
+R843:856 VALexp <> val_expression ind
+R825:838 VALexp <> val_expression ind
+R902:905 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R920:923 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R924:937 VALexp <> val_expression ind
+R906:919 VALexp <> val_expression ind
+R888:901 VALexp <> val_expression ind
+R1034:1037 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1038:1051 VALexp <> val_expression ind
+R1028:1033 Coq.Strings.String <> string ind
+R1055:1095 VALexp <> exp_val constr
+R1098:1143 VALexp <> exp_var constr
+R1146:1190 VALexp <> exp_array constr
+R1193:1237 VALexp <> exp_tuple constr
+R1263:1270 VALexp <> exp_plus constr
+not 1250:1250 <> :::x_'+'''_x
+R1334:1340 VALexp <> exp_sub constr
+not 1321:1321 <> :::x_'-'''_x
+R1404:1410 VALexp <> exp_mul constr
+not 1391:1391 <> :::x_'*'''_x
+R1474:1480 VALexp <> exp_div constr
+not 1461:1461 <> :::x_'/'''_x
+R1544:1550 VALexp <> exp_mod constr
+not 1531:1531 <> :::x_'%'''_x
+R1617:1626 VALexp <> exp_typeof constr
+not 1601:1601 <> :::'type#'_x

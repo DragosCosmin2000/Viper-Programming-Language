@@ -1,0 +1,97 @@
+DIGEST 87a4b298ebc2dc34c6e14df6d894cbaa
+Fvariables
+R15:19 Coq.Arith.Arith <> <> lib
+R37:41 Coq.Strings.Ascii <> <> lib
+R59:74 Coq.Strings.Byte <> <> lib
+R92:97 Coq.Strings.String <> <> lib
+R246:254 datatypes <> <> lib
+ind 317:324 <> variable
+constr 337:344 <> var_name
+R354:357 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R358:365 variables <> variable ind
+R348:353 Coq.Strings.String <> string ind
+R369:407 variables <> var_name constr
+def 472:478 <> vars_eq
+R493:500 variables <> variable ind
+R505:508 Coq.Init.Datatypes <> bool ind
+R527:530 variables <> var2 var
+R521:524 variables <> var1 var
+R541:548 variables <> var_name constr
+R557:564 variables <> var_name constr
+R579:581 Coq.Strings.String <> eqb def
+R687:691 Coq.Init.Datatypes <> false constr
+R639:642 Coq.Init.Datatypes <> true constr
+ind 756:764 <> all_types
+constr 771:775 <> var_t
+constr 803:807 <> val_t
+constr 830:836 <> array_t
+constr 861:867 <> tuple_t
+constr 892:897 <> dict_t
+R787:790 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R791:799 variables <> all_types ind
+R779:786 variables <> variable ind
+R814:817 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R818:826 variables <> all_types ind
+R811:813 datatypes <> Val ind
+R845:848 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R849:857 variables <> all_types ind
+R840:844 datatypes <> Array ind
+R876:879 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R880:888 variables <> all_types ind
+R871:875 datatypes <> Tuple ind
+R905:908 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R909:917 variables <> all_types ind
+R901:904 datatypes <> Dict ind
+R921:959 variables <> var_t constr
+R962:995 variables <> val_t constr
+R998:1035 variables <> array_t constr
+R1038:1075 variables <> tuple_t constr
+R1078:1113 variables <> dict_t constr
+def 1176:1178 <> Env
+R1191:1194 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1195:1203 variables <> all_types ind
+R1183:1190 variables <> variable ind
+def 1265:1270 <> update
+R1279:1281 variables <> Env def
+R1291:1298 variables <> variable ind
+R1310:1318 variables <> all_types ind
+R1323:1325 variables <> Env def
+R1348:1354 variables <> vars_eq def
+R1361:1363 variables <> var var
+R1356:1359 variables <> var' var
+R1411:1413 variables <> env var
+R1415:1418 variables <> var' var
+R1385:1389 variables <> value var
+def 1482:1496 <> typeof_auxiliar
+R1503:1511 variables <> all_types ind
+R1516:1521 Coq.Strings.String <> string ind
+R1534:1534 variables <> x var
+R1545:1549 variables <> var_t constr
+R1567:1571 variables <> val_t constr
+R1609:1613 datatypes <> error constr
+R1642:1649 datatypes <> positive constr
+R1684:1691 datatypes <> negative constr
+R1726:1732 datatypes <> boolean constr
+R1767:1770 datatypes <> char constr
+R1813:1819 variables <> array_t constr
+R1839:1845 variables <> tuple_t constr
+R1865:1870 variables <> dict_t constr
+def 1904:1909 <> typeof
+R1916:1924 variables <> all_types ind
+R1934:1936 variables <> Env def
+R1941:1946 Coq.Strings.String <> string ind
+R1959:1959 variables <> x var
+R1970:1974 variables <> var_t constr
+R1983:1997 variables <> typeof_auxiliar def
+R2000:2002 variables <> env var
+R2013:2017 variables <> val_t constr
+R2055:2059 datatypes <> error constr
+R2088:2095 datatypes <> positive constr
+R2130:2137 datatypes <> negative constr
+R2172:2178 datatypes <> boolean constr
+R2213:2216 datatypes <> char constr
+R2259:2265 variables <> array_t constr
+R2285:2291 variables <> tuple_t constr
+R2311:2316 variables <> dict_t constr
+R2377:2382 variables <> typeof def
+not 2348:2348 <> :::'typeof$('_x_'$;'_x_'$)'

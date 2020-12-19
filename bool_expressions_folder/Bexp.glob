@@ -1,0 +1,77 @@
+DIGEST 815d356d15ae93463022603afc0504ab
+FBexp
+R15:19 Coq.Arith.Arith <> <> lib
+R37:41 Coq.Strings.Ascii <> <> lib
+R59:74 Coq.Strings.Byte <> <> lib
+R92:97 Coq.Strings.String <> <> lib
+R246:254 datatypes <> <> lib
+R388:396 variables <> <> lib
+R520:525 VALexp <> <> lib
+ind 593:610 <> boolean_expression
+constr 617:620 <> bval
+constr 653:656 <> bnot
+constr 703:706 <> band
+constr 775:777 <> bor
+constr 846:848 <> blt
+constr 909:913 <> blteq
+constr 974:976 <> beq
+constr 1037:1039 <> bgt
+constr 1100:1104 <> bgteq
+R628:631 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R632:649 Bexp <> boolean_expression ind
+R624:627 Coq.Init.Datatypes <> bool ind
+R678:681 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R682:699 Bexp <> boolean_expression ind
+R660:677 Bexp <> boolean_expression ind
+R728:731 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R750:753 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R754:771 Bexp <> boolean_expression ind
+R732:749 Bexp <> boolean_expression ind
+R710:727 Bexp <> boolean_expression ind
+R799:802 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R821:824 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R825:842 Bexp <> boolean_expression ind
+R803:820 Bexp <> boolean_expression ind
+R781:798 Bexp <> boolean_expression ind
+R866:869 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R884:887 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R888:905 Bexp <> boolean_expression ind
+R870:883 VALexp <> val_expression ind
+R852:865 VALexp <> val_expression ind
+R931:934 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R949:952 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R953:970 Bexp <> boolean_expression ind
+R935:948 VALexp <> val_expression ind
+R917:930 VALexp <> val_expression ind
+R994:997 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1012:1015 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1016:1033 Bexp <> boolean_expression ind
+R998:1011 VALexp <> val_expression ind
+R980:993 VALexp <> val_expression ind
+R1057:1060 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1075:1078 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1079:1096 Bexp <> boolean_expression ind
+R1061:1074 VALexp <> val_expression ind
+R1043:1056 VALexp <> val_expression ind
+R1122:1125 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1140:1143 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1144:1161 Bexp <> boolean_expression ind
+R1126:1139 VALexp <> val_expression ind
+R1108:1121 VALexp <> val_expression ind
+R1165:1207 Bexp <> bval constr
+R1231:1234 Bexp <> bnot constr
+not 1220:1220 <> :::'!'''_x
+R1280:1283 Bexp <> band constr
+not 1263:1263 <> :::x_'and'''_x
+R1330:1332 Bexp <> bor constr
+not 1314:1314 <> :::x_'or'''_x
+R1376:1378 Bexp <> blt constr
+not 1363:1363 <> :::x_'<'''_x
+R1423:1427 Bexp <> blteq constr
+not 1409:1409 <> :::x_'<='''_x
+R1472:1474 Bexp <> beq constr
+not 1458:1458 <> :::x_'=='''_x
+R1518:1520 Bexp <> bgt constr
+not 1505:1505 <> :::x_'>'''_x
+R1565:1569 Bexp <> bgteq constr
+not 1551:1551 <> :::x_'>='''_x
