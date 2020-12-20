@@ -24,7 +24,12 @@ Inductive val_expression :=
 | exp_div : val_expression -> val_expression -> val_expression
 | exp_mod : val_expression -> val_expression -> val_expression
 (* to be able to make something like: if typeof(3) == "number" then... *)
-| exp_typeof : string -> val_expression.
+| exp_typeof : string -> val_expression
+(* for vectors methods *)
+| exp_count : variable -> val_expression
+| exp_append : variable -> variable -> val_expression
+| exp_get : variable -> val_expression -> val_expression
+| exp_slice : variable -> val_expression -> val_expression -> val_expression.
 
 Coercion exp_val : Val >-> val_expression.
 Coercion exp_var : variable >-> val_expression.
@@ -37,3 +42,8 @@ Notation "A *' B" := (exp_mul A B) (at level 40, left associativity).
 Notation "A /' B" := (exp_div A B) (at level 40, left associativity).
 Notation "A %' B" := (exp_mod A B) (at level 40, left associativity).
 Notation "'type#' A" := (exp_typeof A) (at level 1).
+
+Notation "A '.count'()'" := (exp_count A) (at level 1).
+Notation "A '.append'(' B ')'" := (exp_append A B) (at level 1).
+Notation "A '.get'(' B ')'" := (exp_get A B) (at level 1).
+Notation "A '.slice'(' B , C ')'" := (exp_slice A B C) (at level 1).

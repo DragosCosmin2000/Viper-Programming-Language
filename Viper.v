@@ -26,8 +26,18 @@ Require Import VALexp.
 Add LoadPath "bool_expressions_folder".
 Require Import Bexp.
 
+(* ---------- Vectors Methods ---------- *)
+Add LoadPath "vectors_methods_folder".
+Require Import vectors_methods.
+
 (* -------------------- Statements -------------------- *)
 Inductive Statement :=
+(* vectors methods *)
+| push : variable -> Array -> Statement
+| pop : variable -> Statement
+| insert : variable -> val_expression -> val_expression -> Statement
+| remove : variable -> val_expression -> Statement
+(* comm *)
 | empty_stmt : comment -> Statement
 (* assignment *)
 | assignment : variable -> val_expression -> Statement
@@ -41,19 +51,24 @@ Inductive Statement :=
 | forloop : boolean_expression -> Statement -> Statement -> Statement
 | forloop_firstloop : Statement -> boolean_expression -> Statement -> Statement -> Statement.
 
+Notation "A 'push'(' B ')'" := (push A B) (at level 1).
+Notation "A '.pop'()'" := (pop A) (at level 1).
+Notation "A '.insert'(' B , C ')'" := (insert A B C) (at level 1).
+Notation "A '.remove'(' B ')'" := (remove_arr A B) (at level 1).
+
 Coercion empty_stmt : comment >-> Statement.
 
 Notation "X ::= A" := (assignment X A) (at level 90).
 Notation "S ;' S'" := (sequence S S') (at level 97, right associativity).
 
 Notation "'if*' A 'then*' '{' B '}'" := (ifthen A B) (at level 95).
-Notation "'if'' A 'then'' '{' B '}' 'else'' C" := (ifthenelse A B C) (at level 95).
+Notation "'if'' A 'then'' '{' B '}' 'else'' '{' C '}'" := (ifthenelse A B C) (at level 95).
 
 Notation "'while'' A 'do'' '{' B '}'" := (while A B) (at level 95).
 Notation "'do*' '{' A '}' 'while*' B" := (do_while A B) (at level 95).
 
-Notation "'for'' A ;' B 'do'' '{' C '}'" := (forloop A B C) (at level 95).
-Notation "'for'' A ;' B ;' C 'do'' '{' D '}'" := (forloop_firstloop A B C D) (at level 95).
+Notation "'for'' A ; B 'do'' '{' C '}'" := (forloop A B C) (at level 95).
+Notation "'for*' A ; B ; C 'do*' '{' D '}'" := (forloop_firstloop A B C D) (at level 95).
 
 Definition start_env : Env :=
   fun var => error.
@@ -74,6 +89,18 @@ Check
       "v" ::= ("v" /' 10)
     };'
     "v" ::= "aux"
+  }
+.
+
+Check
+  /* "P2: Inlocuirea multiplilor de 3 cu string-ul <multiplu de 3> dintr-un vector" */;'
+  "vec" ::= #[ 5, 2, 10, 12, -#20, #"a", #"7", 7, 60 #];'
+  for* "it" ::= 0; "it" <' "vec".count'(); "it" ::= "it" +' 1 do*
+  {
+    if* "vec".get'("it") %' 3 ==' 0 then*
+    {
+      "vec".insert'(#(#"m", #"u", #"l", #"t", #"i", #"p", #"l", #"u", #" ", #"d", #"e", #" ", #"3"#), "it")
+    }
   }
 .
 

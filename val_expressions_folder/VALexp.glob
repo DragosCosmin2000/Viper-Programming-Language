@@ -1,4 +1,4 @@
-DIGEST b00628a927c5fe325dae4c8e1a480962
+DIGEST d4e183668c5168a858ae8f70e4be5ac6
 FVALexp
 R15:19 Coq.Arith.Arith <> <> lib
 R37:41 Coq.Strings.Ascii <> <> lib
@@ -17,6 +17,10 @@ constr 752:758 <> exp_mul
 constr 815:821 <> exp_div
 constr 878:884 <> exp_mod
 constr 1015:1024 <> exp_typeof
+constr 1081:1089 <> exp_count
+constr 1122:1131 <> exp_append
+constr 1176:1182 <> exp_get
+constr 1233:1241 <> exp_slice
 R489:492 Coq.Init.Logic <> ::type_scope:x_'->'_x not
 R493:506 VALexp <> val_expression ind
 R486:488 datatypes <> Val ind
@@ -57,19 +61,47 @@ R888:901 VALexp <> val_expression ind
 R1034:1037 Coq.Init.Logic <> ::type_scope:x_'->'_x not
 R1038:1051 VALexp <> val_expression ind
 R1028:1033 Coq.Strings.String <> string ind
-R1055:1095 VALexp <> exp_val constr
-R1098:1143 VALexp <> exp_var constr
-R1146:1190 VALexp <> exp_array constr
-R1193:1237 VALexp <> exp_tuple constr
-R1263:1270 VALexp <> exp_plus constr
-not 1250:1250 <> :::x_'+'''_x
-R1334:1340 VALexp <> exp_sub constr
-not 1321:1321 <> :::x_'-'''_x
-R1404:1410 VALexp <> exp_mul constr
-not 1391:1391 <> :::x_'*'''_x
-R1474:1480 VALexp <> exp_div constr
-not 1461:1461 <> :::x_'/'''_x
-R1544:1550 VALexp <> exp_mod constr
-not 1531:1531 <> :::x_'%'''_x
-R1617:1626 VALexp <> exp_typeof constr
-not 1601:1601 <> :::'type#'_x
+R1101:1104 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1105:1118 VALexp <> val_expression ind
+R1093:1100 variables <> variable ind
+R1143:1146 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1155:1158 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1159:1172 VALexp <> val_expression ind
+R1147:1154 variables <> variable ind
+R1135:1142 variables <> variable ind
+R1194:1197 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1212:1215 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1216:1229 VALexp <> val_expression ind
+R1198:1211 VALexp <> val_expression ind
+R1186:1193 variables <> variable ind
+R1253:1256 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1271:1274 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1289:1292 Coq.Init.Logic <> ::type_scope:x_'->'_x not
+R1293:1306 VALexp <> val_expression ind
+R1275:1288 VALexp <> val_expression ind
+R1257:1270 VALexp <> val_expression ind
+R1245:1252 variables <> variable ind
+R1310:1350 VALexp <> exp_val constr
+R1353:1398 VALexp <> exp_var constr
+R1401:1445 VALexp <> exp_array constr
+R1448:1492 VALexp <> exp_tuple constr
+R1518:1525 VALexp <> exp_plus constr
+not 1505:1505 <> :::x_'+'''_x
+R1589:1595 VALexp <> exp_sub constr
+not 1576:1576 <> :::x_'-'''_x
+R1659:1665 VALexp <> exp_mul constr
+not 1646:1646 <> :::x_'*'''_x
+R1729:1735 VALexp <> exp_div constr
+not 1716:1716 <> :::x_'/'''_x
+R1799:1805 VALexp <> exp_mod constr
+not 1786:1786 <> :::x_'%'''_x
+R1872:1881 VALexp <> exp_typeof constr
+not 1856:1856 <> :::'type#'_x
+R1930:1938 VALexp <> exp_count constr
+not 1910:1910 <> :::x_'.count''()'
+R1992:2001 VALexp <> exp_append constr
+not 1966:1966 <> :::x_'.append''('_x_')'
+R2054:2060 VALexp <> exp_get constr
+not 2031:2031 <> :::x_'.get''('_x_')'
+R2119:2127 VALexp <> exp_slice constr
+not 2090:2090 <> :::x_'.slice''('_x_','_x_')'
