@@ -4,12 +4,6 @@ Require Import Coq.Strings.Byte.
 Require Import String.
 Local Open Scope string_scope.
 
-(* -------------------- Comments -------------------- *)
-Inductive comment : Set :=
-| comm : string -> comment.
-
-Notation "/* A */" := (comm A) (at level 99).
-
 (* -------------------- Datatypes for VPL -------------------- *)
 Add LoadPath "datatypes_folder".
 Require Import datatypes.
@@ -31,44 +25,8 @@ Add LoadPath "vectors_methods_folder".
 Require Import vectors_methods.
 
 (* -------------------- Statements -------------------- *)
-Inductive Statement :=
-(* vectors methods *)
-| push : variable -> Array -> Statement
-| pop : variable -> Statement
-| insert : variable -> val_expression -> val_expression -> Statement
-| remove : variable -> val_expression -> Statement
-(* comm *)
-| empty_stmt : comment -> Statement
-(* assignment *)
-| assignment : variable -> val_expression -> Statement
-| sequence : Statement -> Statement -> Statement
-(* conditional statements *)
-| ifthen : boolean_expression -> Statement -> Statement
-| ifthenelse : boolean_expression -> Statement -> Statement -> Statement
-(* repetition statements *)
-| while : boolean_expression -> Statement -> Statement
-| do_while : Statement -> boolean_expression -> Statement
-| forloop : boolean_expression -> Statement -> Statement -> Statement
-| forloop_firstloop : Statement -> boolean_expression -> Statement -> Statement -> Statement.
-
-Notation "A 'push'(' B ')'" := (push A B) (at level 1).
-Notation "A '.pop'()'" := (pop A) (at level 1).
-Notation "A '.insert'(' B , C ')'" := (insert A B C) (at level 1).
-Notation "A '.remove'(' B ')'" := (remove_arr A B) (at level 1).
-
-Coercion empty_stmt : comment >-> Statement.
-
-Notation "X ::= A" := (assignment X A) (at level 90).
-Notation "S ;' S'" := (sequence S S') (at level 97, right associativity).
-
-Notation "'if*' A 'then*' '{' B '}'" := (ifthen A B) (at level 95).
-Notation "'if'' A 'then'' '{' B '}' 'else'' '{' C '}'" := (ifthenelse A B C) (at level 95).
-
-Notation "'while'' A 'do'' '{' B '}'" := (while A B) (at level 95).
-Notation "'do*' '{' A '}' 'while*' B" := (do_while A B) (at level 95).
-
-Notation "'for'' A ; B 'do'' '{' C '}'" := (forloop A B C) (at level 95).
-Notation "'for*' A ; B ; C 'do*' '{' D '}'" := (forloop_firstloop A B C D) (at level 95).
+Add LoadPath "statements_folder".
+Require Import statements.
 
 Definition start_env : Env :=
   fun var => error.
@@ -104,32 +62,26 @@ Check
   }
 .
 
-Inductive files :=
+(* I/O sim try *)
+Definition files := string -> string.
 (* filename and content *)
-| text_file : string -> string -> files.
 
-Notation "'file@' A @ B @" := (text_file A B) (at level 1).
+Definition current_files : files :=
+  fun x => "".
 
-Definition file1 := file@"tema1.txt" @ "1. Calculati: a)..."@.
+Definition update (f : files)
+           (filename : string) (new_content : string) : files :=
+  fun x => if (eqb filename x)
+              then new_content
+              else (f x).
 
-Fixpoint substring (n m : nat) (s : string) : string :=
-  match n, m, s with
-  | O, O, _ => EmptyString
-  | O, S m', EmptyString => s
-  | O, S m', String c s' => String c (substring 0 m' s')
-  | S n', _, EmptyString => s
-  | S n', _, String c s' => substring n' m s'
-  end.
+Notation "'write' '((' A , B , C '))'" := (update A B C) (at level 1).
 
-Compute (substring 23 2 "abcdefg").
+Definition newfile := write((current_files, "input.txt", "10 5 6 12 33 3")).
 
+Compute newfile "input.txt".
 
+(* Lambda try *)
+Notation " 'lambda(' A , B , C ')' :::= P " := (fun A B C => P) (at level 12).
 
-
-
-
-
-
-
-
-
+Definition xw := lambda(a, b, c) :::= (a + b + c).
