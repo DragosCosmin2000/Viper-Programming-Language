@@ -948,6 +948,11 @@ Proof.
   -simpl. eapply b_tran. eapply eq. simpl. reflexivity. eapply b_refl.
 Qed.
 
+(*
+COMM FOR COMPILATION PART
+
+
+
 (* -------------------- Comments -------------------- *)
 Inductive comment : Set :=
 | comm : string -> comment.
@@ -1158,7 +1163,7 @@ Check
 "v" ::= #[ 22, 33, -#12, 14, -#89 #];
 "i" ::= 0;
 for' "i" <' "v".count();' "i" ::= "i" +' 1 do'
-  "a" ::= "v".get("i");
+  "a" ::= "v".get(0);
   if' "a" ==' 0 then'
     "a" ::= 200
   endif';
@@ -1171,3 +1176,404 @@ for' "i" <' "v".count();' "i" ::= "i" +' 1 do'
   endwhile'
 endfor'
 .
+
+
+
+*)
+(* ---------- Lambda functions ----------*)
+Inductive lambda_aexp :=
+| lval : all_types -> lambda_aexp
+| lparam : string -> lambda_aexp
+| lplus : lambda_aexp -> lambda_aexp -> lambda_aexp
+| lsub : lambda_aexp -> lambda_aexp -> lambda_aexp
+| lmul : lambda_aexp -> lambda_aexp -> lambda_aexp
+| ldiv : lambda_aexp -> lambda_aexp -> lambda_aexp
+| lmod : lambda_aexp -> lambda_aexp -> lambda_aexp.
+
+Coercion lval : all_types >-> lambda_aexp.
+Coercion lparam : string >-> lambda_aexp.
+
+Notation "A +& B" := (lplus A B) (at level 76, left associativity).
+Notation "A -& B" := (lsub A B) (at level 76, left associativity).
+Notation "A *& B" := (lmul A B) (at level 66, left associativity).
+Notation "A /& B" := (ldiv A B) (at level 66, left associativity).
+Notation "A %& B" := (lmod A B) (at level 66, left associativity).
+
+Inductive Params :=
+| empty_params
+| params_cons : string -> Params -> Params.
+
+Notation "$( $)" := empty_params (format "$( $)", at level 60).
+Notation "$( A , B , .. , N $)" := (params_cons A (params_cons B .. (params_cons N empty_params)..)) (at level 60).
+
+(* Compute get_arr (#[ 1, 11, 111, 1111 #]) 3 0. *)
+
+Fixpoint get_value (param : string) (params : Params) (arguments : Array) (current_index : nat) : all_types :=
+  match params with
+  | empty_params => error
+  | params_cons a1 a2 => if eqb a1 param
+                         then get_arr arguments current_index 0
+                         else get_value param a2 arguments (current_index + 1)
+  end.
+
+(*Compute get_value ("f") ( $("b", "d", "c", "a", "e" $) ) ( #[2, 4, 3, 1, 5#] ) 0.*)
+
+Fixpoint aeval_lambda_aexp (params : Params) (arguments : Array) (exp : lambda_aexp) : all_types :=
+  match exp with
+  | lval a => a
+  | lparam a => get_value a params arguments 0
+  | lplus a1 a2 => plus_with_error (aeval_lambda_aexp params arguments a1) (aeval_lambda_aexp params arguments a2)
+  | lsub a1 a2 => sub_with_error (aeval_lambda_aexp params arguments a1) (aeval_lambda_aexp params arguments a2)
+  | lmul a1 a2 => mul_with_error (aeval_lambda_aexp params arguments a1) (aeval_lambda_aexp params arguments a2)
+  | ldiv a1 a2 => div_with_error (aeval_lambda_aexp params arguments a1) (aeval_lambda_aexp params arguments a2)
+  | lmod a1 a2 => mod_with_error (aeval_lambda_aexp params arguments a1) (aeval_lambda_aexp params arguments a2)
+  end.
+
+(*Definition my_exp := lsub (lparam "b") (lparam "e").
+Compute aeval_lambda_aexp ( $("b", "d", "c", "a", "e" $) ) ( #[2, 4, 3, 1, 5#] ) (my_exp).*)
+
+Inductive Lambda_pairs : Set :=
+| basic_pair : Params -> lambda_aexp -> Lambda_pairs.
+
+Notation " << P , A >> " := (basic_pair P A) (at level 50).
+
+(*Check <<$("x", "y", "z"$), "x" +& "y" +& "z">>.*)
+
+Definition lambda_Env := string -> Lambda_pairs.
+
+Definition env0_lambda : lambda_Env :=
+  fun l_func => basic_pair ($( $)) (lval error).
+
+Definition update_lambda (env : lambda_Env) (l_func : string) (l_pair : Lambda_pairs) : lambda_Env :=
+  fun var' => if eqb var' l_func
+              then l_pair
+              else (env var').
+
+(*Definition env1_lambda := update_lambda env0_lambda "adunare_3" (basic_pair ($("x", "y", "z"$)) (lplus (lparam "x") (lplus (lparam "y") (lparam "z"))) ).
+Compute env1_lambda "adunare_3".*)
+
+Notation "N <- '@lambda(' E , P ')'" := (update_lambda E N P) (at level 35).
+
+Definition env1_lambda := "round_arith_mean" <- @lambda( env0_lambda, <<$("x", "y", "z"$), ("x" +& "y" +& "z") /& 3>>).
+
+Definition calculate_lambda (lambda_name : string) (l_env : lambda_Env) (arguments : Array) : all_types :=
+  match (l_env lambda_name) with
+  | basic_pair a b => aeval_lambda_aexp a arguments b
+  end.
+
+(*Compute calculate_lambda "round_arith_mean" env1_lambda ( #[ 31, 4, 10#]).*)
+
+Notation " A '~(' B , C '~)'" := (calculate_lambda A B C) (at level 60).
+
+Compute "round_arith_mean" ~(env1_lambda, (#[ 3, 4, 5#]) ~).
+
+Definition env2_lambda := "double" <- @lambda( env1_lambda, <<$("x", "NULL"$), "x" *& 2 *& 3>>).
+
+Compute "double" ~(env2_lambda, (#[ 1000#]) ~).
+
+(*---------- Compilation ----------*)
+Require Import String.
+Require Import List.
+Import ListNotations.
+
+Definition c_label := string.
+
+Inductive asm_exp :=
+| const : Val -> asm_exp
+| var : variable -> asm_exp
+| plus : asm_exp -> asm_exp -> asm_exp
+| times : asm_exp -> asm_exp -> asm_exp
+| IFL : c_label -> asm_exp
+| LABEL : c_label -> asm_exp
+| COMPARE : asm_exp
+| SEQ : asm_exp -> asm_exp -> asm_exp.
+
+Coercion const : Val >-> asm_exp.
+Coercion var : variable >-> asm_exp.
+Notation "A +$ B" := (plus A B) (at level 50).
+Notation "A *$ B" := (times A B) (at level 40).
+Notation "'IF1' 'JUMPTO' C 'ENDIF'" := (IFL C) (at level 70).
+Notation " A ;$ B " := (SEQ A B) (at level 80).
+
+Check IF1 JUMPTO "label1" ENDIF.
+Check IF1 JUMPTO "label1" ENDIF ;$ 2 +$ 2.
+
+Compute (const 23).
+Compute (var "variab").
+Compute "var" +$ (-#20).
+
+Definition convert_to_bool (x : all_types) : bool :=
+  match x with
+  | val_t (boolean b) => b
+  | _ => false
+  end.
+
+Fixpoint interpret (e : asm_exp) (env : Env) : all_types :=
+  match e with
+  | const c => c
+  | var x => (env x)
+  | plus e1 e2 => plus_with_error (interpret e1 env) (interpret e2 env)
+  | times e1 e2 => mul_with_error (interpret e1 env) (interpret e2 env)
+  | IFL c => 0
+  | LABEL a => 0
+  | COMPARE => 0
+  | SEQ a b => 0
+  end.
+
+Definition asm_env : Env := update (update (update (update default_env "x" 7) "y" (-#3)) "z" 12) "a" 10.
+
+Compute interpret ("x" +$ "y") asm_env.
+
+Inductive Flags := zero_flag | carry_flag | exec_flag.
+Scheme Equality for Flags.
+
+Check Flags_beq.
+Compute Flags_beq zero_flag exec_flag.
+
+Definition flag_env := Flags -> nat.
+
+Definition fenv : flag_env := fun flag => if Flags_beq flag exec_flag then 1 else 0.
+
+Definition fset (env : flag_env) (f : Flags) : flag_env :=
+    fun f' => if Flags_beq f f'
+              then 1
+              else (env f').
+
+Definition funset (env : flag_env) (f : Flags) : flag_env :=
+    fun f' => if Flags_beq f f'
+              then 0
+              else (env f').
+
+Definition isSet (env : flag_env) (f : Flags) : bool :=
+  if Nat.eqb (env f) 1
+  then true
+  else false
+.
+
+Compute isSet fenv zero_flag.
+
+(* Define a stack machine *)
+Inductive Instruction :=
+| asm_push_const : all_types -> Instruction
+| asm_push_var : variable -> Instruction
+| asm_add : Instruction
+| asm_mul : Instruction
+| asm_cmp : Instruction
+| asm_label : c_label -> Instruction
+| asm_jl : c_label -> Instruction
+(*| asm_jle : Instruction
+| asm_jg : Instruction
+| asm_jge : Instruction*).
+
+Definition Stack := list all_types.
+
+Inductive Stack_Pair : Set :=
+| basic_stack_pair : c_label -> flag_env -> Stack -> Stack_Pair.
+
+Definition sp1 := basic_stack_pair "none" fenv [].
+Definition sp2 := basic_stack_pair "none" fenv ([ (val_t 10) ; (val_t 20) ]).
+Definition sp3 := basic_stack_pair "none" fenv ([ (val_t 10) ]).
+
+Definition run_instruction (i : Instruction) (env : Env) (stack_pair : Stack_Pair) : Stack_Pair :=
+  match i with
+  | asm_push_const c => (match stack_pair with
+                        | basic_stack_pair l f s => if isSet f exec_flag
+                                                    then basic_stack_pair l f (c :: s)
+                                                    else stack_pair
+                        end)
+  | asm_push_var x => (match stack_pair with
+                      | basic_stack_pair l f s => if isSet f exec_flag
+                                                  then basic_stack_pair l f ((env x) :: s)
+                                                  else stack_pair
+                       end)
+  | asm_add => (match stack_pair with
+               | basic_stack_pair l f s => if isSet f exec_flag
+                                           then basic_stack_pair l f (match s with
+                                                                     | n1 :: n2 :: s' => (plus_with_error n1 n2) :: s'
+                                                                     | _ => s
+                                                                     end)
+                                           else stack_pair
+                end)
+  | asm_mul => (match stack_pair with
+               | basic_stack_pair l f s => if isSet f exec_flag
+                                           then basic_stack_pair l f (match s with
+                                                                     | n1 :: n2 :: s' => (mul_with_error n1 n2) :: s'
+                                                                     | _ => s
+                                                                     end)
+                                           else stack_pair
+                end)
+  | asm_cmp => (match stack_pair with
+               | basic_stack_pair l f s => if isSet f exec_flag
+                                           then (match s with
+                                                 | n1 :: n2 :: s' => (if convert_to_bool (eq_with_error n1 n2)
+                                                                      then basic_stack_pair l (fset f zero_flag) s'
+                                                                      else (if convert_to_bool(lessthan_with_error n1 n2)
+                                                                            then basic_stack_pair l (fset f carry_flag) s'
+                                                                            else basic_stack_pair l (funset f carry_flag) s'))
+                                                 | _ => stack_pair
+                                                 end)
+                                           else stack_pair
+                end)
+  | asm_label a => (match stack_pair with
+                   | basic_stack_pair l f s => if isSet f exec_flag
+                                               then stack_pair
+                                               else (if (eqb l a)
+                                                     then basic_stack_pair l (fset f exec_flag) s
+                                                     else stack_pair)
+                   end)
+  | asm_jl a => (match stack_pair with
+                | basic_stack_pair l f s => if isSet f exec_flag
+                                            then (if isSet f zero_flag
+                                                  then basic_stack_pair l (funset (funset (funset f exec_flag) zero_flag) carry_flag) s
+                                                  else (if isSet f carry_flag
+                                                       then basic_stack_pair a (funset (funset (funset f exec_flag) zero_flag) carry_flag) s
+                                                       else basic_stack_pair l (funset (funset (fset f exec_flag) zero_flag) carry_flag) s))
+                                            else stack_pair
+                 end)
+  end.
+
+Compute (run_instruction (asm_push_const 5) asm_env sp1).
+Compute (run_instruction (asm_push_var "x") asm_env sp1).
+Compute (run_instruction asm_add asm_env sp2).
+Compute (run_instruction asm_cmp asm_env sp3).
+
+Fixpoint run_instructions (is' : list Instruction) (env : Env) (stack : Stack_Pair) : Stack_Pair :=
+  match is' with
+  | [] => stack
+  | i :: is'' => run_instructions is'' env (run_instruction i env stack)
+  end.
+
+(*----- EXEMPLU 1 -----*)
+Definition pgm1 := [
+  asm_push_const 5;
+  asm_push_var "x";
+  asm_add;
+  asm_push_var "y";
+  asm_add;
+  asm_push_const 5;
+  asm_mul;
+  asm_push_var "z";
+  asm_push_const 3;
+  asm_mul
+].
+Compute run_instructions pgm1 asm_env sp1.
+
+(*----- EXEMPLU 2 -----*)
+Definition pgm2 := [
+  (* pgm1 *)
+  asm_push_const 5;
+  asm_push_var "x";
+  asm_add;
+  asm_push_var "y";
+  asm_add;
+  asm_push_const 5;
+  asm_mul;
+  asm_push_var "z";
+  asm_push_const 3;
+  asm_mul;
+
+  (* more code *)
+  asm_cmp;
+  asm_jl "label1";
+  asm_push_const 2;
+  asm_push_const 5;
+  asm_mul;
+  asm_label "label1";
+  asm_push_const 2;
+  asm_push_const 5;
+  asm_add
+].
+Compute run_instructions pgm2 asm_env sp1.
+
+(*----- EXEMPLU 3 -----*)
+(* Suma numerelor mai mari decat 0 dintre x, y, z *)
+Compute asm_env "x".
+Compute asm_env "y".
+Compute asm_env "z".
+
+Definition pgm3 := [
+  asm_push_const 0;
+  asm_push_var "x";
+  asm_cmp;
+  asm_jl "x<1";
+  asm_push_var "x";
+  asm_label "x<1";
+  
+  asm_push_const 0;
+  asm_push_var "y";
+  asm_cmp;
+  asm_jl "y<1";
+  asm_push_var "y";
+  asm_label "y<1";
+
+  asm_push_const 0;
+  asm_push_var "z";
+  asm_cmp;
+  asm_jl "z<1";
+  asm_push_var "z";
+  asm_label "z<1";
+  asm_add;
+  asm_add
+].
+Compute run_instructions pgm3 asm_env sp1.
+
+Fixpoint compile (e : asm_exp) : list Instruction :=
+  match e with
+  | const c => [asm_push_const c]
+  | var x => [asm_push_var x]
+  | plus e1 e2 => (compile e1) ++ (compile e2) ++ [asm_add]
+  | times e1 e2 => (compile e1) ++ (compile e2) ++ [asm_mul]
+  | IFL e => [asm_jl e]
+  | LABEL e => [asm_label e]
+  | COMPARE => [asm_cmp]
+  | SEQ e1 e2 => (compile e1) ++ (compile e2)
+  (*| id x => [push_var x]
+  | plus e1 e2 => (compile e1) ++ (compile e2) ++ [add]
+  | times e1 e2 => (compile e1) ++ (compile e2) ++ [mul]*)
+  end.
+
+Definition prog := ((2 +$ 2 *$ 3) ;$ 0 ;$ COMPARE ;$ (IF1 JUMPTO "label1" ENDIF) ;$ 9 ;$ LABEL "label1" ;$ 14).
+
+Compute compile prog.
+
+Compute run_instructions (compile prog) asm_env sp1.
+
+Lemma soundness_helper :
+  forall e env stack is',
+    run_instructions (compile e ++ is') env stack =
+    run_instructions is' env ((interpret e env) :: stack).
+Proof.
+  induction e; intros; simpl; trivial.
+  - rewrite <- app_assoc.
+    rewrite <- app_assoc.
+    rewrite IHe1.
+    rewrite IHe2.
+    simpl.
+    rewrite PeanoNat.Nat.add_comm.
+    reflexivity.
+  - rewrite <- app_assoc.
+    rewrite <- app_assoc.
+    rewrite IHe1.
+    rewrite IHe2.
+    simpl.
+    rewrite PeanoNat.Nat.mul_comm.
+    reflexivity.
+Qed.
+
+Theorem soundness :
+  forall e env,
+    run_instructions (compile e) env [] =
+    [interpret e env].
+Proof.
+  intros.
+  Check app_nil_r.
+  rewrite <- app_nil_r with (l := (compile e)).
+  rewrite soundness_helper.
+  simpl. trivial.
+Qed.
+
+
+
+
+
+

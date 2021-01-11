@@ -948,6 +948,11 @@ Proof.
   -simpl. eapply b_tran. eapply eq. simpl. reflexivity. eapply b_refl.
 Qed.
 
+(*
+COMM FOR COMPILATION PART
+
+
+
 (* -------------------- Comments -------------------- *)
 Inductive comment : Set :=
 | comm : string -> comment.
@@ -1172,6 +1177,9 @@ for' "i" <' "v".count();' "i" ::= "i" +' 1 do'
 endfor'
 .
 
+
+
+*)
 (* ---------- Lambda functions ----------*)
 Inductive lambda_aexp :=
 | lval : all_types -> lambda_aexp
@@ -1259,6 +1267,151 @@ Notation " A '~(' B , C '~)'" := (calculate_lambda A B C) (at level 60).
 
 Compute "round_arith_mean" ~(env1_lambda, (#[ 3, 4, 5#]) ~).
 
-Definition env2_lambda := "double" <- @lambda( env1_lambda, <<$("x", "NULL"$), "x" *& 2>>).
+Definition env2_lambda := "double" <- @lambda( env1_lambda, <<$("x", "NULL"$), "x" *& 2 *& 3>>).
 
-Compute "double" ~(env2_lambda, (#[ 8#]) ~).
+Compute "double" ~(env2_lambda, (#[ 1000#]) ~).
+
+(*---------- Compilation bool_expr ----------*)
+Require Import String.
+Require Import List.
+Import ListNotations.
+
+Inductive boolean_exp :=
+| _const : bool -> boolean_exp
+| _var : variable -> boolean_exp
+| _and : boolean_exp -> boolean_exp -> boolean_exp
+| _or : boolean_exp -> boolean_exp -> boolean_exp
+| _not : boolean_exp -> boolean_exp.
+
+Coercion _const : bool >-> boolean_exp.
+Coercion _var : variable >-> boolean_exp.
+Notation "A &&& B" := (_and A B) (at level 50).
+Notation "A ||| B" := (_or A B) (at level 55).
+Notation "! A" := (_not A) (at level 45).
+
+Check _const true.
+Check _var "a".
+Check _const false ||| _var "x" &&& _var "y".
+
+Fixpoint interpret (b : boolean_exp) (env : variable -> bool) : bool :=
+  match b with
+  | _const c => c
+  | _var x => (env x)
+  | _and b1 b2 => andb (interpret b1 env) (interpret b2 env)
+  | _or b1 b2 => orb (interpret b1 env) (interpret b2 env)
+  | _not b => negb (interpret b env)
+  end.
+
+Definition env0 := fun x => if vars_eq x "x" then true else false.
+
+Compute env0 "x".
+
+(* Define a stack machine *)
+Inductive Instruction :=
+| asm_push_const : bool -> Instruction
+| asm_push_var : variable -> Instruction
+| asm_and : Instruction
+| asm_or : Instruction
+| asm_not : Instruction.
+
+Definition Stack := list bool.
+Definition run_instruction (i : Instruction) (env : variable -> bool) (stack : Stack) : Stack :=
+  match i with
+  | asm_push_const c => (c :: stack)
+  | asm_push_var x => ((env x) :: stack)
+  | asm_and => match stack with
+               | n1 :: n2 :: stack' => (andb n1 n2) :: stack'
+               | _ => stack
+               end
+  | asm_or => match stack with
+              | n1 :: n2 :: stack' => (orb n1 n2) :: stack'
+              | _ => stack
+              end
+  | asm_not => match stack with
+               | n1 :: stack' => (negb n1) :: stack'
+               | _ => stack
+               end
+  end.
+
+Compute run_instruction (asm_push_const true) env0 [].
+Compute run_instruction asm_and env0 [false;true].
+
+Fixpoint run_instructions (is' : list Instruction) (env : variable -> bool) (stack : Stack) : Stack :=
+  match is' with
+  | [] => stack
+  | i :: is'' => run_instructions is'' env (run_instruction i env stack)
+  end.
+
+Definition p1 := [
+  asm_push_var "x";
+  asm_push_const false;
+  asm_or;
+  asm_push_var "y";
+  asm_not;
+  asm_and
+].
+
+Compute run_instructions p1 env0 [].
+
+Fixpoint compile (b : boolean_exp) : list Instruction :=
+  match b with
+  | _const c => [asm_push_const c]
+  | _var x => [asm_push_var x]
+  | _and b1 b2 => (compile b1) ++ (compile b2) ++ [asm_and]
+  | _or b1 b2 => (compile b1) ++ (compile b2) ++ [asm_or]
+  | _not b => (compile b) ++ [asm_not]
+  end.
+
+Definition bexp1 := "x" ||| "y" &&& "y".
+
+Compute [interpret bexp1 env0].
+
+Compute run_instructions (compile bexp1) env0 [].
+
+Open Scope bool_scope.
+
+Lemma soundness_helper :
+  forall e env stack is',
+    run_instructions (compile e ++ is') env stack =
+    run_instructions is' env ((interpret e env) :: stack).
+Proof.
+  induction e; intros; simpl; trivial.
+  - rewrite <- app_assoc.
+    rewrite <- app_assoc.
+    rewrite IHe1.
+    rewrite IHe2.
+    simpl.
+    rewrite Bool.andb_comm.
+    reflexivity.
+  - rewrite <- app_assoc.
+    rewrite <- app_assoc.
+    rewrite IHe1.
+    rewrite IHe2.
+    simpl.
+    rewrite Bool.orb_comm.
+    reflexivity.
+  - rewrite <- app_assoc.
+    rewrite IHe.
+    simpl.
+    reflexivity.
+Qed.
+
+Theorem soundness :
+  forall e env,
+    run_instructions (compile e) env [] =
+    [interpret e env].
+Proof.
+  intros.
+  Check app_nil_r.
+  rewrite <- app_nil_r with (l := (compile e)).
+  rewrite soundness_helper.
+  simpl. trivial.
+Qed.
+
+Definition c_expr := !(!(("x" &&& "y" ||| "z" &&& false) ||| ("x" &&& false ||| ("y" ||| true)))).
+
+Compute [interpret c_expr env0].
+
+Compute compile c_expr.
+
+Compute run_instructions (compile c_expr) env0 [].
